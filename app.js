@@ -1,4 +1,4 @@
-﻿const UAV_TYPES = {
+const UAV_TYPES = {
 "Sting": { c4: 450 },
 "P1-SUN": { c4: 500 },
 "AS3-IR Merops": { autoWarhead: "КУФ-1,2" },
@@ -20,12 +20,13 @@ const BASE_REASON_OPTIONS = [
 "Технічна несправність борта"
 ]
 const SKIP_SPLASH_KEY = "skyguard-skip-splash"
-const FORM_STORAGE_KEY = "skyguard-form"
-const UNIT_STORAGE_KEY = "skyguard-unit"
-const CREW_STORAGE_KEY = "skyguard-crew"
-const TOWN_STORAGE_KEY = "skyguard-town"
-const SERIAL_STORAGE_KEY = "skyguard-serial"
-const UAV_STORAGE_KEY = "skyguard-uav-config"
+const SETTINGS_STORAGE_KEY = "skyguard-settings-v2"
+const LEGACY_FORM_STORAGE_KEY = "skyguard-form"
+const LEGACY_UNIT_STORAGE_KEY = "skyguard-unit"
+const LEGACY_CREW_STORAGE_KEY = "skyguard-crew"
+const LEGACY_TOWN_STORAGE_KEY = "skyguard-town"
+const LEGACY_SERIAL_STORAGE_KEY = "skyguard-serial"
+const LEGACY_UAV_STORAGE_KEY = "skyguard-uav-config"
 
 const REASON_OPTIONS = {
 "Борт повернуто": BASE_REASON_OPTIONS,
@@ -53,6 +54,7 @@ combatFields: document.getElementById("combatFields"),
 preTakeoffFields: document.getElementById("preTakeoffFields"),
 targetType: document.getElementById("targetType"),
 targetTypeBlock: document.getElementById("targetTypeBlock"),
+noTaskTargetBtn: document.getElementById("noTaskTargetBtn"),
 trainingToggle: document.getElementById("trainingToggle"),
 uavSelectBtn: document.getElementById("uavSelectBtn"),
 uavMenu: document.getElementById("uavMenu"),
@@ -78,6 +80,7 @@ h2: document.getElementById("h2"),
 sendMenu: document.getElementById("sendMenu"),
 sendReportBtn: document.getElementById("sendReportBtn"),
 sendCancelBtn: document.getElementById("sendCancelBtn"),
+uavClearBtn: document.getElementById("uavClearBtn"),
 sendWhatsBtn: document.getElementById("sendWhatsBtn"),
 sendDiscBtn: document.getElementById("sendDiscBtn")
 }
@@ -209,17 +212,7 @@ saveToastEl.style.display = "none"
 }, 1400)
 }
 
-function readStoredForm() {
-try {
-return JSON.parse(localStorage.getItem(FORM_STORAGE_KEY) || "{}")
-} catch {
-localStorage.removeItem(FORM_STORAGE_KEY)
-return {}
-}
-}
-
-function sanitizeUavConfig(value) {
-if (!value || typeof value !== "object" || typeof value.name !== "string") {
+function emptyUavConfig() {
 return {
 name: "",
 mode: "",
@@ -227,6 +220,11 @@ detonator: "",
 autoWarhead: "",
 c4: ""
 }
+}
+
+function sanitizeUavConfig(value) {
+if (!value || typeof value !== "object" || typeof value.name !== "string") {
+return emptyUavConfig()
 }
 
 return {
@@ -238,79 +236,101 @@ c4: value.c4 || ""
 }
 }
 
-function readStoredString(key) {
-const value = localStorage.getItem(key)
-return typeof value === "string" ? value : ""
+function normalizePersistedSettings(value) {
+const payload = value && typeof value === "object" ? value : {}
+return {
+unit: typeof payload.unit === "string" ? payload.unit : "",
+crew: typeof payload.crew === "string" ? payload.crew : "",
+town: typeof payload.town === "string" ? payload.town : "",
+serial: typeof payload.serial === "string" ? payload.serial : "",
+uavConfig: sanitizeUavConfig(payload.uavConfig)
+}
 }
 
-function readStoredUav() {
+function readLegacySettings() {
+let legacyFormSettings = normalizePersistedSettings(null)
 try {
-return sanitizeUavConfig(JSON.parse(localStorage.getItem(UAV_STORAGE_KEY) || "null"))
+legacyFormSettings = normalizePersistedSettings(JSON.parse(localStorage.getItem(LEGACY_FORM_STORAGE_KEY) || "{}"))
 } catch {
-localStorage.removeItem(UAV_STORAGE_KEY)
-return sanitizeUavConfig(null)
-}
+localStorage.removeItem(LEGACY_FORM_STORAGE_KEY)
 }
 
-function migrateLegacyFormStorage() {
-const payload = readStoredForm()
-if (!Object.keys(payload).length) return
-
-if (!localStorage.getItem(UNIT_STORAGE_KEY) && typeof payload.unit === "string") {
-localStorage.setItem(UNIT_STORAGE_KEY, payload.unit)
-}
-if (!localStorage.getItem(CREW_STORAGE_KEY) && typeof payload.crew === "string") {
-localStorage.setItem(CREW_STORAGE_KEY, payload.crew)
-}
-if (!localStorage.getItem(TOWN_STORAGE_KEY) && typeof payload.town === "string") {
-localStorage.setItem(TOWN_STORAGE_KEY, payload.town)
-}
-if (!localStorage.getItem(SERIAL_STORAGE_KEY) && typeof payload.serial === "string") {
-localStorage.setItem(SERIAL_STORAGE_KEY, payload.serial)
-}
-if (!localStorage.getItem(UAV_STORAGE_KEY) && payload.uavConfig) {
-localStorage.setItem(UAV_STORAGE_KEY, JSON.stringify(sanitizeUavConfig(payload.uavConfig)))
-}
+let legacyUavConfig = emptyUavConfig()
+try {
+legacyUavConfig = sanitizeUavConfig(JSON.parse(localStorage.getItem(LEGACY_UAV_STORAGE_KEY) || "null"))
+} catch {
+localStorage.removeItem(LEGACY_UAV_STORAGE_KEY)
 }
 
-function saveFields() {
-const sanitizedUav = sanitizeUavConfig(uavConfig)
-localStorage.setItem(UNIT_STORAGE_KEY, el.unit.value)
-localStorage.setItem(CREW_STORAGE_KEY, el.crew.value)
-localStorage.setItem(TOWN_STORAGE_KEY, el.town.value)
-localStorage.setItem(SERIAL_STORAGE_KEY, el.serial.value)
-localStorage.setItem(UAV_STORAGE_KEY, JSON.stringify(sanitizedUav))
-localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify({
+return normalizePersistedSettings({
+unit: localStorage.getItem(LEGACY_UNIT_STORAGE_KEY) || legacyFormSettings.unit,
+crew: localStorage.getItem(LEGACY_CREW_STORAGE_KEY) || legacyFormSettings.crew,
+town: localStorage.getItem(LEGACY_TOWN_STORAGE_KEY) || legacyFormSettings.town,
+serial: localStorage.getItem(LEGACY_SERIAL_STORAGE_KEY) || legacyFormSettings.serial,
+uavConfig: legacyUavConfig.name ? legacyUavConfig : legacyFormSettings.uavConfig
+})
+}
+
+function readPersistedSettings() {
+try {
+const raw = localStorage.getItem(SETTINGS_STORAGE_KEY)
+if (raw) {
+return normalizePersistedSettings(JSON.parse(raw))
+}
+} catch {
+localStorage.removeItem(SETTINGS_STORAGE_KEY)
+}
+
+const legacySettings = readLegacySettings()
+if (legacySettings.unit || legacySettings.crew || legacySettings.town || legacySettings.serial || legacySettings.uavConfig.name) {
+writePersistedSettings(legacySettings)
+}
+return legacySettings
+}
+
+function writePersistedSettings(settings) {
+const normalized = normalizePersistedSettings(settings)
+localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(normalized))
+localStorage.setItem(LEGACY_FORM_STORAGE_KEY, JSON.stringify(normalized))
+}
+
+function getCurrentPersistedSettings() {
+return {
 unit: el.unit.value,
 crew: el.crew.value,
 town: el.town.value,
 serial: el.serial.value,
-uavConfig: sanitizedUav
-}))
+uavConfig: sanitizeUavConfig(uavConfig)
+}
+}
+
+let isHydratingSettings = false
+
+function persistSettings(showToastIndicator = true) {
+writePersistedSettings(getCurrentPersistedSettings())
+if (showToastIndicator && !isHydratingSettings) {
 showSaveToast()
 }
-
-function loadSavedFields() {
-const legacyPayload = readStoredForm()
-migrateLegacyFormStorage()
-const storedUnit = readStoredString(UNIT_STORAGE_KEY) || (typeof legacyPayload.unit === "string" ? legacyPayload.unit : "")
-const storedCrew = readStoredString(CREW_STORAGE_KEY) || (typeof legacyPayload.crew === "string" ? legacyPayload.crew : "")
-const storedTown = readStoredString(TOWN_STORAGE_KEY) || (typeof legacyPayload.town === "string" ? legacyPayload.town : "")
-const storedSerial = readStoredString(SERIAL_STORAGE_KEY) || (typeof legacyPayload.serial === "string" ? legacyPayload.serial : "")
-const storedUav = readStoredUav()
-const legacyUav = sanitizeUavConfig(legacyPayload.uavConfig)
-
-el.unit.value = storedUnit
-el.crew.value = storedCrew
-el.town.value = storedTown
-el.serial.value = storedSerial
-uavConfig = storedUav.name ? storedUav : legacyUav
-updateUavButton()
 }
 
-function restoreSavedFields() {
-loadSavedFields()
-updatePreview()
+function applyFieldValue(input, value) {
+input.value = value
+input.defaultValue = value
+input.setAttribute("value", value)
+}
+
+function loadFromLocalStorage() {
+const settings = readPersistedSettings()
+isHydratingSettings = true
+applyFieldValue(el.unit, settings.unit)
+applyFieldValue(el.crew, settings.crew)
+applyFieldValue(el.town, settings.town)
+applyFieldValue(el.serial, settings.serial)
+uavConfig = settings.uavConfig.name ? settings.uavConfig : emptyUavConfig()
+updateUavButton()
+renderFlightLog()
+showWhen(el.logBlock, true)
+isHydratingSettings = false
 }
 
 function targetLabel() {
@@ -341,7 +361,7 @@ if (!uavConfig.name) return ""
 if (uavConfig.autoWarhead) {
 return `Витрата БЧ: ${uavConfig.autoWarhead} - 1 шт.`
 }
-return `Витрата БЧ: ${uavConfig.detonator} - 1 шт., С4 - ${uavConfig.c4}гр.`
+return `Витрата БЧ: ${uavConfig.detonator} - 1 шт., C4 - ${uavConfig.c4}гр.`
 }
 
 function updateUavButton() {
@@ -351,7 +371,7 @@ return
 }
 const payloadText = uavConfig.autoWarhead
 ? uavConfig.autoWarhead
-: `${uavConfig.detonator}, C4 ${uavConfig.c4}гр`
+: `${uavConfig.detonator}, C4 ${uavConfig.c4}гр.`
 el.uavSelectBtn.textContent = `${uavConfig.name} (${uavConfig.mode}) • ${payloadText}`
 }
 
@@ -432,7 +452,7 @@ modalSelection.detonator = value
 renderUavModal()
 })
 el.uavModalSummary.textContent = modalSelection.name
-? `С4 буде встановлено автоматично: ${currentType.c4}гр`
+? `С4 буде встановлено автоматично: ${currentType.c4}гр.`
 : ""
 } else if (currentType && currentType.autoWarhead) {
 el.uavModalSummary.textContent = `БЧ буде встановлено автоматично: ${currentType.autoWarhead}`
@@ -452,6 +472,15 @@ if (currentType.autoWarhead) return true
 return Boolean(modalSelection.detonator)
 }
 
+function clearUavSelection() {
+  modalSelection = {
+    name: "",
+    mode: "",
+    detonator: ""
+  }
+  renderUavModal()
+}
+
 function confirmUavSelection() {
 if (!canConfirmUav()) return
 const currentType = UAV_TYPES[modalSelection.name]
@@ -462,10 +491,10 @@ detonator: currentType.autoWarhead ? "" : modalSelection.detonator,
 autoWarhead: currentType.autoWarhead || "",
 c4: currentType.c4 || ""
 }
-updateUavButton()
-saveFields()
-updatePreview()
 closeUavModal()
+updateUavButton()
+persistSettings()
+updatePreview()
 }
 
 function setValue(field, value) {
@@ -478,6 +507,12 @@ updatePreview()
 
 function setTargetType(value) {
 el.targetType.value = value
+updatePreview()
+}
+
+function setNoAssignmentTarget() {
+if (trainingMode) return
+el.target.value = "Ціль без видачі"
 updatePreview()
 }
 
@@ -550,6 +585,7 @@ showWhen(el.combatOutcomeBlock, hasTakenOff && !trainingMode)
 showWhen(el.trainingOutcomeBlock, hasTakenOff && trainingMode)
 showWhen(el.targetTypeBlock, hasTakenOff && !trainingMode)
 showWhen(el.combatFields, !trainingMode)
+showWhen(el.noTaskTargetBtn, !trainingMode)
 if (trainingMode) {
 showWhen(el.flightOutcomeBlock, false)
 showWhen(el.reasonBlock, false)
@@ -582,11 +618,11 @@ alert("Вкажіть підрозділ")
 return false
 }
 if (!uavConfig.name) {
-alert("Оберіть БПЛА")
+alert("Вкажіть назву БПЛА")
 return false
 }
 if (!el.serial.value.trim()) {
-alert("Вкажіть номер борта")
+alert("Вкажіть серійний номер")
 return false
 }
 if (!el.target.value.trim()) {
@@ -696,7 +732,6 @@ return lines.filter(Boolean).join("\n")
 
 function updatePreview() {
 el.report.textContent = buildCurrentReport()
-saveFields()
 }
 
 function takeoff() {
@@ -719,11 +754,11 @@ if (trainingMode) {
 return true
 }
 if (!battleResult) {
-alert("Оберіть результат бою")
+alert("Вкажіть результат бою")
 return false
 }
 if (battleResult === "Ціль не знищено" && !flightResult) {
-alert("Оберіть результат польоту")
+alert("Вкажіть результат польоту")
 return false
 }
 return true
@@ -803,42 +838,50 @@ el.sendMenu.style.display = "none"
 el.sendDiscBtn.onclick = async () => {
 await copy(el.report.textContent)
 window.open("https://discord.com/app", "_blank")
-alert("Доповідь скопійовано. Вставте її в Discord.")
+alert("Повідомлення скопійовано. Вставте його в Discord.")
 el.sendMenu.style.display = "none"
 }
 
 el.uavSelectBtn.onclick = openUavModal
 el.uavCancelBtn.onclick = closeUavModal
+el.uavClearBtn.onclick = clearUavSelection
 el.uavConfirmBtn.onclick = confirmUavSelection
 el.uavMenu.onclick = event => {
 if (event.target === el.uavMenu) {
 closeUavModal()
 }
-}
+};
 
 [el.unit, el.crew, el.town, el.serial, el.target, el.azimuth, el.course, el.distance, el.height, el.takeoff, el.endTime, el.targetType, el.az2, el.dist2, el.h2].forEach(input => {
 input.addEventListener("input", updatePreview)
-})
+});
 
 [el.unit, el.crew, el.town, el.serial].forEach(input => {
-input.addEventListener("input", saveFields)
-})
+input.addEventListener("input", () => persistSettings())
+input.addEventListener("change", () => persistSettings())
+});
 
-restoreSavedFields()
+let appInitialized = false
+
+function initializeApp() {
+if (appInitialized) return
+appInitialized = true
+loadFromLocalStorage()
 trainingMode = el.trainingToggle.checked
 syncTrainingTarget()
 document.body.classList.toggle("training", trainingMode)
 refreshPostTakeoffView()
 renderUavModal()
-renderFlightLog()
 updatePreview()
-requestAnimationFrame(restoreSavedFields)
-setTimeout(restoreSavedFields, 0)
-window.addEventListener("load", () => setTimeout(restoreSavedFields, 0))
-window.addEventListener("pageshow", restoreSavedFields)
+}
+
+initializeApp()
+document.addEventListener("DOMContentLoaded", initializeApp, { once: true })
 
 if ("serviceWorker" in navigator) {
-navigator.serviceWorker.register("sw.js")
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    registrations.forEach(registration => registration.unregister())
+  })
 }
 
 
