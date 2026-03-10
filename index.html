@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
@@ -21,7 +21,7 @@
 
 <div class="appHeader">
 <div class="appTitle">SkyGuard</div>
-<div class="appVersion">Версія 1.0.1</div>
+<div class="appVersion">Версія 1.1.0</div>
 </div>
 
 <div class="modeSwitch">
@@ -37,16 +37,18 @@
 <input id="unit" placeholder="Підрозділ *">
 <input id="crew" placeholder="Екіпаж *">
 <button type="button" id="uavSelectBtn">Обрати БПЛА</button>
-<input id="town" placeholder="Р-н виконання завдань / н.п. *">
-<input id="serial" placeholder="Номер борта *">
+<input id="town" placeholder="р-н виконання завдань/ н.п. *">
+<input id="serial" placeholder="Серійний номер *">
 </div>
 
 <div class="block" id="missionBlock">
+<div class="inlineRow targetRow">
 <input id="target" placeholder="Номер цілі *">
-
+<button type="button" id="noTaskTargetBtn" onclick="setNoAssignmentTarget()">Ціль без видачі</button>
+</div>
 <div id="afterTakeoff" class="hidden">
 <div id="combatOutcomeBlock">
-<h3>Результат бою</h3>
+<h3>Результат Бою</h3>
 <div id="battleResults" class="doubleRow"></div>
 </div>
 
@@ -56,7 +58,7 @@
 <button type="button" onclick="setTargetType('Shahed')">Shahed</button>
 <button type="button" onclick="setTargetType('Гербера')">Гербера</button>
 </div>
-<input id="targetType" placeholder="Інший тип цілі">
+<input id="targetType" placeholder="Тип цілі">
 </div>
 
 <div id="flightOutcomeBlock" class="hidden">
@@ -70,12 +72,12 @@
 </div>
 
 <div id="reasonBlock" class="hidden">
-<h3>Причини</h3>
+<h3>Причина</h3>
 <div id="reasonOptions"></div>
 </div>
 
 <div id="destroyCoords" class="hidden">
-<h3>Координати знищення цілі</h3>
+<h3>Координати знищення</h3>
 <input id="az2" placeholder="Азимут">
 <div class="quickRow">
 <button type="button" onclick="setValue('az2',0)">0</button>
@@ -88,7 +90,7 @@
 <button type="button" onclick="setValue('az2',315)">315</button>
 </div>
 
-<input id="dist2" placeholder="Дальність">
+<input id="dist2" placeholder="Відстань">
 <div class="quickRow">
 <button type="button" onclick="setValue('dist2',1000)">1000</button>
 <button type="button" onclick="setValue('dist2',3000)">3000</button>
@@ -108,7 +110,7 @@
 <input id="endTime" placeholder="Час завершення">
 <div class="quickRow actionRow">
 <button type="button" onclick="autoEnd()">Поточний час</button>
-<button type="button" onclick="finish()">ПОЛІТ ЗАВЕРШЕНО</button>
+<button type="button" onclick="finish()">Політ завершено</button>
 <button type="button" onclick="newFlight()">Новий політ</button>
 </div>
 </div>
@@ -139,7 +141,7 @@
 <button type="button" onclick="setValue('course',315)">315</button>
 </div>
 
-<input id="distance" placeholder="Дальність">
+<input id="distance" placeholder="Відстань">
 <div class="quickRow">
 <button type="button" onclick="setValue('distance',1000)">1000</button>
 <button type="button" onclick="setValue('distance',3000)">3000</button>
@@ -159,7 +161,7 @@
 <input id="takeoff" placeholder="Час зльоту">
 <div class="quickRow actionRow">
 <button type="button" onclick="autoTakeoff()">Поточний час</button>
-<button type="button" onclick="takeoff()">ЗЛІТ</button>
+<button type="button" onclick="takeoff()">Зліт</button>
 </div>
 </div>
 </div>
@@ -167,14 +169,14 @@
 <div id="reportBlock" class="block hidden">
 <h3>Попередній текст доповіді</h3>
 <div id="reportPreview"></div>
-<button type="button" id="sendReportBtn">Надіслати доповідь</button>
+<button type="button" id="sendReportBtn">Відправити доповідь</button>
 </div>
 
-<div id="logBlock" class="block hidden">
+<div id="logBlock" class="block">
 <h3>Журнал польотів</h3>
 <div id="flightLog"></div>
 <div class="logButtons">
-<button type="button" onclick="copyFlightLog()">Скопіювати журнал</button>
+<button type="button" onclick="copyFlightLog()">Копіювати журнал</button>
 <button type="button" onclick="clearFlightLog()">Очистити журнал</button>
 </div>
 </div>
@@ -195,7 +197,7 @@
 <div class="sendBox wideBox">
 <h3>Вибір БПЛА</h3>
 <div id="uavTypeOptions" class="choiceGrid"></div>
-<h3>Режим</h3>
+<h3>Режим роботи</h3>
 <div id="uavModeOptions" class="doubleRow"></div>
 <div id="detonatorBlock" class="hidden">
 <h3>Детонатор</h3>
@@ -203,7 +205,8 @@
 </div>
 <div id="uavModalSummary" class="modalSummary"></div>
 <div class="quickRow actionRow">
-<button type="button" id="uavConfirmBtn">Застосувати</button>
+<button type="button" id="uavConfirmBtn">Підтвердити</button>
+<button type="button" id="uavClearBtn">Очистити вибір</button>
 <button type="button" id="uavCancelBtn">Скасувати</button>
 </div>
 </div>
