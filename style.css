@@ -88,14 +88,24 @@ font-size:12px;
 }
 
 .appHeader{
-display:flex;
-justify-content:space-between;
-align-items:flex-end;
+display:grid;
+grid-template-columns:minmax(0, 49%) minmax(120px, 49%);
+align-items:center;
 margin-bottom:14px;
 padding:12px 14px;
 border:1px solid var(--line);
 background:linear-gradient(180deg, rgba(24,34,43,.95), rgba(11,17,23,.95));
 box-shadow:var(--shadow);
+gap:12px;
+}
+
+.appHeaderMeta{
+display:flex;
+flex-direction:column;
+gap:4px;
+align-items:flex-start;
+min-width:0;
+max-width:49%;
 }
 
 .appTitle{
@@ -105,19 +115,87 @@ letter-spacing:.14em;
 text-transform:uppercase;
 }
 
+.headerMenuWrap{
+display:flex;
+justify-content:flex-end;
+align-items:center;
+min-width:0;
+max-width:49%;
+width:100%;
+justify-self:end;
+}
+
 .appVersion{
+width:auto;
+padding:0;
+margin:0;
+border:none;
+background:none;
+box-shadow:none;
 font-size:11px;
 color:var(--muted);
 letter-spacing:.14em;
 text-transform:uppercase;
+font-weight:600;
+text-align:left;
+cursor:pointer;
 }
+
+.appVersion:hover{
+color:var(--text);
+transform:none;
+}
+
+.appVersion:focus{
+box-shadow:none;
+color:var(--text);
+}
+
+.headerMenuBtn{
+width:auto;
+min-width:120px;
+max-width:100%;
+margin:0 0 0 auto;
+padding:10px 14px;
+white-space:nowrap;
+justify-self:end;
+}
+
+@media (max-width: 340px){
+.appHeader{
+display:flex;
+align-items:stretch;
+flex-direction:column;
+}
+
+.appHeaderMeta,
+.headerMenuWrap{
+max-width:none;
+}
+
+.headerMenuWrap{
+display:block;
+width:100%;
+max-width:100%;
+flex:1 1 100%;
+align-self:stretch;
+}
+
+.headerMenuBtn{
+display:block;
+width:100%;
+max-width:100%;
+margin:0;
+}
+}
+
 
 .modeSwitch{
 display:flex;
 align-items:center;
 justify-content:center;
 gap:12px;
-margin-bottom:14px;
+margin-bottom:10px;
 padding:10px 12px;
 border:1px solid var(--line);
 background:rgba(9,16,23,.84);
@@ -194,6 +272,12 @@ transition:transform .12s ease, border-color .2s ease, background .2s ease, colo
 text-transform:uppercase;
 }
 
+.appHeader .headerMenuBtn{
+width:auto;
+margin:0;
+max-width:100%;
+}
+
 button:hover{
 transform:translateY(-1px);
 border-color:var(--line-strong);
@@ -225,6 +309,61 @@ flex:1;
 .quickRow button{
 padding:8px 10px;
 font-size:13px;
+}
+
+.flightMetricButtons,
+.flightMetricInputs{
+display:grid;
+grid-template-columns:repeat(4, minmax(0, 1fr));
+gap:8px;
+}
+
+.flightMetricButtons{
+margin-bottom:8px;
+}
+
+.flightMetricButtons button,
+.flightMetricInputs input{
+margin:0;
+}
+
+.flightMetricButtonsThree,
+.flightMetricInputsThree{
+display:grid;
+grid-template-columns:repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 560px){
+.flightMetricInputs{
+grid-template-columns:repeat(2, minmax(0, 1fr));
+}
+
+.flightMetricInputsThree{
+grid-template-columns:repeat(3, minmax(0, 1fr));
+}
+}
+
+@media (min-width: 340px) and (max-width: 560px){
+.flightMetricButtons,
+.flightMetricInputs{
+grid-template-columns:repeat(4, minmax(0, 1fr));
+}
+
+.flightMetricButtonsThree,
+.flightMetricInputsThree{
+grid-template-columns:repeat(3, minmax(0, 1fr));
+}
+
+.flightMetricButtons button{
+padding:8px 4px;
+font-size:11px;
+letter-spacing:.01em;
+}
+
+.flightMetricInputs input{
+padding:10px 6px;
+font-size:12px;
+}
 }
 
 .summaryField,
@@ -274,6 +413,10 @@ border-color:rgba(255,255,255,.1);
 display:none !important;
 }
 
+#preTakeoffFields{
+margin-top:10px;
+}
+
 .switch{
 position:relative;
 display:inline-block;
@@ -319,6 +462,23 @@ input:checked + .slider:before{
 transform:translateX(27px);
 }
 
+.versionInfoBox{
+max-width:520px;
+}
+
+.versionInfoList{
+display:grid;
+gap:10px;
+margin:6px 0 14px;
+color:var(--text);
+}
+
+.versionInfoList p{
+margin:0;
+line-height:1.45;
+color:var(--muted);
+}
+
 .sendMenu{
 position:fixed;
 inset:0;
@@ -354,6 +514,47 @@ width:280px;
 margin:4px 0 10px;
 font-size:13px;
 }
+
+.fieldLabel{
+display:block;
+margin:4px 0 8px;
+font-size:12px;
+color:#cbd5e1;
+text-align:left;
+}
+
+.discordModeLabel{
+margin:10px 0 8px;
+font-size:12px;
+color:#94a3b8;
+text-align:left;
+}
+
+.discordInputRow{
+display:grid;
+grid-template-columns:minmax(0, 1fr) 44px;
+gap:8px;
+align-items:stretch;
+margin-bottom:12px;
+}
+
+#discordWebhookInput{
+margin-bottom:0;
+}
+
+#discordWebhookInput:disabled{
+opacity:.72;
+cursor:not-allowed;
+}
+
+.iconButton{
+display:flex;
+align-items:center;
+justify-content:center;
+padding:0;
+font-size:18px;
+}
+
 
 .choiceGrid{
 display:grid;
@@ -478,6 +679,55 @@ flex:0.9;
 white-space:nowrap;
 }
 
+.targetTypeBlockInline{
+margin-top:8px;
+}
+
+.targetTypeRow{
+gap:6px;
+}
+
+.targetTypeRow button{
+width:auto;
+margin:0;
+}
+
+.targetTypeRow button.active{
+border-color:var(--accent-strong);
+background:linear-gradient(180deg, #f59e0b, #d97706);
+color:#111827;
+}
+
+.targetSummary{
+padding:6px 0 2px;
+text-align:center;
+font-size:18px;
+font-weight:700;
+letter-spacing:.04em;
+}
+
+#target{
+min-width:150px;
+}
+
+@media (min-width: 340px) and (max-width: 560px){
+.targetRow{
+flex-direction:row;
+align-items:stretch;
+}
+
+.targetRow input{
+min-width:150px;
+width:auto;
+flex:1 1 150px;
+}
+
+.targetRow button{
+flex:0 0 auto;
+width:auto;
+}
+}
+
 
 #battleResults .resultBtn:first-child{
   border-color:#15803d;
@@ -499,4 +749,58 @@ white-space:nowrap;
 #battleResults .resultBtn:last-child.active{
   background:linear-gradient(180deg, #ef4444, #b91c1c);
   color:#fff1f2;
+}
+
+
+.supportFooter{
+margin:18px 0 4px;
+padding:10px 0 0;
+border-top:1px solid var(--line);
+}
+
+.supportFooterInner{
+display:flex;
+align-items:center;
+justify-content:flex-end;
+gap:10px;
+}
+
+.supportText{
+font-size:12px;
+letter-spacing:.08em;
+text-transform:uppercase;
+color:var(--muted);
+}
+
+.supportLink{
+display:inline-flex;
+align-items:center;
+gap:6px;
+padding:0;
+border:none;
+background:transparent;
+color:var(--accent-strong);
+font-weight:700;
+font-size:12px;
+letter-spacing:.04em;
+text-transform:uppercase;
+text-decoration:none;
+}
+
+.supportIcon{
+width:16px;
+height:16px;
+flex:0 0 16px;
+}
+
+.supportLink:hover{
+color:#fff;
+filter:none;
+}
+
+
+@media (max-width: 560px){
+.supportFooterInner{
+justify-content:space-between;
+}
 }

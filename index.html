@@ -20,197 +20,204 @@
 </div>
 
 <div class="appHeader">
+<div class="appHeaderMeta">
 <div class="appTitle">SkyGuard</div>
-<div class="appVersion">Версія 1.1.0</div>
+<button type="button" id="versionInfoBtn" class="appVersion">&#1042;&#1077;&#1088;&#1089;&#1110;&#1103; 1.2.0</button>
+</div>
+<div class="headerMenuWrap">
+<button type="button" id="crewMenuBtn" class="headerMenuBtn">&#1045;&#1082;&#1110;&#1087;&#1072;&#1078;</button>
+</div>
 </div>
 
 <div class="modeSwitch">
-<span id="combatLabel">Бойовий</span>
+<span id="combatLabel">&#1041;&#1086;&#1081;&#1086;&#1074;&#1080;&#1081;</span>
 <label class="switch" for="trainingToggle">
 <input type="checkbox" id="trainingToggle" onchange="toggleTraining()">
 <span class="slider"></span>
 </label>
-<span id="trainingLabel">Тренувальний</span>
+<span id="trainingLabel">&#1058;&#1088;&#1077;&#1085;&#1091;&#1074;&#1072;&#1083;&#1100;&#1085;&#1080;&#1081;</span>
 </div>
 
 <div class="block">
-<input id="unit" placeholder="Підрозділ *">
-<input id="crew" placeholder="Екіпаж *">
-<button type="button" id="uavSelectBtn">Обрати БПЛА</button>
-<input id="town" placeholder="р-н виконання завдань/ н.п. *">
-<input id="serial" placeholder="Серійний номер *">
+<button type="button" id="uavSelectBtn">&#1054;&#1073;&#1088;&#1072;&#1090;&#1080; &#1041;&#1055;&#1051;&#1040;</button>
+<input id="serial" placeholder="&#1057;&#1077;&#1088;&#1110;&#1081;&#1085;&#1080;&#1081; &#1085;&#1086;&#1084;&#1077;&#1088; *">
 </div>
 
 <div class="block" id="missionBlock">
-<div class="inlineRow targetRow">
-<input id="target" placeholder="Номер цілі *">
-<button type="button" id="noTaskTargetBtn" onclick="setNoAssignmentTarget()">Ціль без видачі</button>
+<div id="targetRow" class="inlineRow targetRow">
+<input id="target" placeholder="&#1053;&#1086;&#1084;&#1077;&#1088; &#1094;&#1110;&#1083;&#1110; *">
+<button type="button" id="noTaskTargetBtn" onclick="setNoAssignmentTarget()">&#1041;&#1077;&#1079; &#1074;&#1080;&#1076;&#1072;&#1095;&#1110;</button>
 </div>
-<div id="afterTakeoff" class="hidden">
-<div id="combatOutcomeBlock">
-<h3>Результат Бою</h3>
-<div id="battleResults" class="doubleRow"></div>
-</div>
-
-<div id="targetTypeBlock">
-<h3>Тип цілі</h3>
+<div id="targetTypeBlock" class="targetTypeBlockInline">
 <div class="quickRow targetTypeRow">
 <button type="button" onclick="setTargetType('Shahed')">Shahed</button>
-<button type="button" onclick="setTargetType('Гербера')">Гербера</button>
+<button type="button" onclick="setTargetType('&#1043;&#1077;&#1088;&#1073;&#1077;&#1088;&#1072;')">&#1043;&#1077;&#1088;&#1073;&#1077;&#1088;&#1072;</button>
 </div>
-<input id="targetType" placeholder="Тип цілі">
+<input id="targetType" type="hidden">
 </div>
-
+<div id="targetSummary" class="targetSummary hidden"></div>
+<div id="afterTakeoff" class="hidden">
+<div id="combatOutcomeBlock">
+<h3>&#1056;&#1077;&#1079;&#1091;&#1083;&#1100;&#1090;&#1072;&#1090; &#1041;&#1086;&#1102;</h3>
+<div id="battleResults" class="doubleRow"></div>
+</div>
 <div id="flightOutcomeBlock" class="hidden">
-<h3>Результат польоту</h3>
+<h3>&#1056;&#1077;&#1079;&#1091;&#1083;&#1100;&#1090;&#1072;&#1090; &#1087;&#1086;&#1083;&#1100;&#1086;&#1090;&#1091;</h3>
 <div id="flightResults"></div>
 </div>
 
 <div id="trainingOutcomeBlock" class="hidden">
-<h3>Результат польоту</h3>
+<h3>&#1056;&#1077;&#1079;&#1091;&#1083;&#1100;&#1090;&#1072;&#1090; &#1087;&#1086;&#1083;&#1100;&#1086;&#1090;&#1091;</h3>
 <div id="trainingResults"></div>
 </div>
 
+<div id="trainingReturnStatusBlock" class="hidden">
+<h3>&#1057;&#1090;&#1072;&#1085; &#1073;&#1086;&#1088;&#1090;&#1072;</h3>
+<div id="trainingReturnStatusOptions"></div>
+</div>
+
 <div id="reasonBlock" class="hidden">
-<h3>Причина</h3>
+<h3>&#1055;&#1088;&#1080;&#1095;&#1080;&#1085;&#1072;</h3>
 <div id="reasonOptions"></div>
 </div>
 
 <div id="destroyCoords" class="hidden">
-<h3>Координати знищення</h3>
-<input id="az2" placeholder="Азимут">
-<div class="quickRow">
-<button type="button" onclick="setValue('az2',0)">0</button>
-<button type="button" onclick="setValue('az2',45)">45</button>
-<button type="button" onclick="setValue('az2',90)">90</button>
-<button type="button" onclick="setValue('az2',135)">135</button>
-<button type="button" onclick="setValue('az2',180)">180</button>
-<button type="button" onclick="setValue('az2',225)">225</button>
-<button type="button" onclick="setValue('az2',270)">270</button>
-<button type="button" onclick="setValue('az2',315)">315</button>
+<h3>&#1050;&#1086;&#1086;&#1088;&#1076;&#1080;&#1085;&#1072;&#1090;&#1080; &#1079;&#1085;&#1080;&#1097;&#1077;&#1085;&#1085;&#1103;</h3>
+<div class="flightMetricButtons flightMetricButtonsThree">
+<button type="button" data-quick-field="az2">&#1040;&#1079;&#1080;&#1084;&#1091;&#1090;</button>
+<button type="button" data-quick-field="dist2">&#1042;&#1110;&#1076;&#1089;&#1090;&#1072;&#1085;&#1100;</button>
+<button type="button" data-quick-field="h2">&#1042;&#1080;&#1089;&#1086;&#1090;&#1072;</button>
 </div>
-
-<input id="dist2" placeholder="Відстань">
-<div class="quickRow">
-<button type="button" onclick="setValue('dist2',1000)">1000</button>
-<button type="button" onclick="setValue('dist2',3000)">3000</button>
-<button type="button" onclick="setValue('dist2',5000)">5000</button>
-<button type="button" onclick="setValue('dist2',10000)">10000</button>
-</div>
-
-<input id="h2" placeholder="Висота">
-<div class="quickRow">
-<button type="button" onclick="setValue('h2',300)">300</button>
-<button type="button" onclick="setValue('h2',500)">500</button>
-<button type="button" onclick="setValue('h2',1000)">1000</button>
-<button type="button" onclick="setValue('h2',1500)">1500</button>
+<div class="flightMetricInputs flightMetricInputsThree">
+<input id="az2" placeholder="&#1040;&#1079;&#1080;&#1084;&#1091;&#1090;" inputmode="numeric" pattern="[0-9]*" autocomplete="off" min="0" max="359">
+<input id="dist2" placeholder="&#1042;&#1110;&#1076;&#1089;&#1090;&#1072;&#1085;&#1100;" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
+<input id="h2" placeholder="&#1042;&#1080;&#1089;&#1086;&#1090;&#1072;" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
 </div>
 </div>
 
-<input id="endTime" placeholder="Час завершення">
+<input id="endTime" placeholder="&#1063;&#1072;&#1089; &#1079;&#1072;&#1074;&#1077;&#1088;&#1096;&#1077;&#1085;&#1085;&#1103;">
 <div class="quickRow actionRow">
-<button type="button" onclick="autoEnd()">Поточний час</button>
-<button type="button" onclick="finish()">Політ завершено</button>
-<button type="button" onclick="newFlight()">Новий політ</button>
+<button type="button" onclick="autoEnd()">&#1055;&#1086;&#1090;&#1086;&#1095;&#1085;&#1080;&#1081; &#1095;&#1072;&#1089;</button>
+<button type="button" onclick="finish()">&#1055;&#1086;&#1083;&#1110;&#1090; &#1079;&#1072;&#1074;&#1077;&#1088;&#1096;&#1077;&#1085;&#1086;</button>
+<button type="button" onclick="newFlight()">&#1053;&#1086;&#1074;&#1080;&#1081; &#1087;&#1086;&#1083;&#1110;&#1090;</button>
 </div>
 </div>
 
 <div id="preTakeoffFields">
 <div id="combatFields">
-<input id="azimuth" placeholder="Азимут">
-<div class="quickRow">
-<button type="button" onclick="setValue('azimuth',0)">0</button>
-<button type="button" onclick="setValue('azimuth',45)">45</button>
-<button type="button" onclick="setValue('azimuth',90)">90</button>
-<button type="button" onclick="setValue('azimuth',135)">135</button>
-<button type="button" onclick="setValue('azimuth',180)">180</button>
-<button type="button" onclick="setValue('azimuth',225)">225</button>
-<button type="button" onclick="setValue('azimuth',270)">270</button>
-<button type="button" onclick="setValue('azimuth',315)">315</button>
+<div class="flightMetricButtons">
+<button type="button" data-quick-field="azimuth">&#1040;&#1079;&#1080;&#1084;&#1091;&#1090;</button>
+<button type="button" data-quick-field="course">&#1050;&#1091;&#1088;&#1089;</button>
+<button type="button" data-quick-field="distance">&#1042;&#1110;&#1076;&#1089;&#1090;&#1072;&#1085;&#1100;</button>
+<button type="button" data-quick-field="height">&#1042;&#1080;&#1089;&#1086;&#1090;&#1072;</button>
 </div>
-
-<input id="course" placeholder="Курс">
-<div class="quickRow">
-<button type="button" onclick="setValue('course',0)">0</button>
-<button type="button" onclick="setValue('course',45)">45</button>
-<button type="button" onclick="setValue('course',90)">90</button>
-<button type="button" onclick="setValue('course',135)">135</button>
-<button type="button" onclick="setValue('course',180)">180</button>
-<button type="button" onclick="setValue('course',225)">225</button>
-<button type="button" onclick="setValue('course',270)">270</button>
-<button type="button" onclick="setValue('course',315)">315</button>
-</div>
-
-<input id="distance" placeholder="Відстань">
-<div class="quickRow">
-<button type="button" onclick="setValue('distance',1000)">1000</button>
-<button type="button" onclick="setValue('distance',3000)">3000</button>
-<button type="button" onclick="setValue('distance',5000)">5000</button>
-<button type="button" onclick="setValue('distance',10000)">10000</button>
+<div class="flightMetricInputs">
+<input id="azimuth" placeholder="&#1040;&#1079;&#1080;&#1084;&#1091;&#1090;" inputmode="numeric" pattern="[0-9]*" autocomplete="off" min="0" max="359">
+<input id="course" placeholder="&#1050;&#1091;&#1088;&#1089;" inputmode="numeric" pattern="[0-9]*" autocomplete="off" min="0" max="359">
+<input id="distance" placeholder="&#1042;&#1110;&#1076;&#1089;&#1090;&#1072;&#1085;&#1100;" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
+<input id="height" placeholder="&#1042;&#1080;&#1089;&#1086;&#1090;&#1072;" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
 </div>
 </div>
-
-<input id="height" placeholder="Висота">
-<div class="quickRow">
-<button type="button" onclick="setValue('height',300)">300</button>
-<button type="button" onclick="setValue('height',500)">500</button>
-<button type="button" onclick="setValue('height',1000)">1000</button>
-<button type="button" onclick="setValue('height',1500)">1500</button>
-</div>
-
-<input id="takeoff" placeholder="Час зльоту">
+<input id="takeoff" placeholder="&#1063;&#1072;&#1089; &#1079;&#1083;&#1100;&#1086;&#1090;&#1091;">
 <div class="quickRow actionRow">
-<button type="button" onclick="autoTakeoff()">Поточний час</button>
-<button type="button" onclick="takeoff()">Зліт</button>
+<button type="button" onclick="autoTakeoff()">&#1055;&#1086;&#1090;&#1086;&#1095;&#1085;&#1080;&#1081; &#1095;&#1072;&#1089;</button>
+<button type="button" onclick="takeoff()">&#1047;&#1083;&#1110;&#1090;</button>
 </div>
 </div>
 </div>
 
 <div id="reportBlock" class="block hidden">
-<h3>Попередній текст доповіді</h3>
+<h3>&#1055;&#1086;&#1087;&#1077;&#1088;&#1077;&#1076;&#1085;&#1110;&#1081; &#1090;&#1077;&#1082;&#1089;&#1090; &#1076;&#1086;&#1087;&#1086;&#1074;&#1110;&#1076;&#1110;</h3>
 <div id="reportPreview"></div>
-<button type="button" id="sendReportBtn">Відправити доповідь</button>
+<div class="logButtons">
+<button type="button" id="copyReportBtn">&#1057;&#1082;&#1086;&#1087;&#1110;&#1102;&#1074;&#1072;&#1090;&#1080;</button>
+<button type="button" id="sendWhatsBtn">&#1042;&#1110;&#1076;&#1087;&#1088;&#1072;&#1074;&#1080;&#1090;&#1080; &#1091; WhatsApp</button>
+<button type="button" id="sendDiscBtn">&#1042;&#1110;&#1076;&#1087;&#1088;&#1072;&#1074;&#1080;&#1090;&#1080; &#1091; Discord</button>
+</div>
 </div>
 
 <div id="logBlock" class="block">
-<h3>Журнал польотів</h3>
+<h3>&#1046;&#1091;&#1088;&#1085;&#1072;&#1083; &#1087;&#1086;&#1083;&#1100;&#1086;&#1090;&#1110;&#1074;</h3>
 <div id="flightLog"></div>
 <div class="logButtons">
-<button type="button" onclick="copyFlightLog()">Копіювати журнал</button>
-<button type="button" onclick="clearFlightLog()">Очистити журнал</button>
+<button type="button" onclick="copyFlightLog()">&#1050;&#1086;&#1087;&#1110;&#1102;&#1074;&#1072;&#1090;&#1080; &#1078;&#1091;&#1088;&#1085;&#1072;&#1083;</button>
+<button type="button" onclick="clearFlightLog()">&#1054;&#1095;&#1080;&#1089;&#1090;&#1080;&#1090;&#1080; &#1078;&#1091;&#1088;&#1085;&#1072;&#1083;</button>
 </div>
 </div>
 
-<div id="toast">Доповідь скопійовано</div>
-<div id="saveToast" class="saveToast">Налаштування збережено</div>
+<div id="toast">&#1044;&#1086;&#1087;&#1086;&#1074;&#1110;&#1076;&#1100; &#1089;&#1082;&#1086;&#1087;&#1110;&#1081;&#1086;&#1074;&#1072;&#1085;&#1086;</div>
+<div id="saveToast" class="saveToast">&#1053;&#1072;&#1083;&#1072;&#1096;&#1090;&#1091;&#1074;&#1072;&#1085;&#1085;&#1103; &#1079;&#1073;&#1077;&#1088;&#1077;&#1078;&#1077;&#1085;&#1086;</div>
 
-<div id="sendMenu" class="sendMenu">
+<div id="crewMenu" class="sendMenu">
+<div class="sendBox wideBox">
+<h3>&#1044;&#1072;&#1085;&#1110; &#1077;&#1082;&#1110;&#1087;&#1072;&#1078;&#1091;</h3>
+<input id="unit" placeholder="&#1055;&#1110;&#1076;&#1088;&#1086;&#1079;&#1076;&#1110;&#1083; *">
+<input id="crew" placeholder="&#1053;&#1072;&#1079;&#1074;&#1072; &#1077;&#1082;&#1110;&#1087;&#1072;&#1078;&#1091; *">
+<input id="town" placeholder="&#1088;-&#1085; &#1074;&#1080;&#1082;&#1086;&#1085;&#1072;&#1085;&#1085;&#1103; &#1079;&#1072;&#1074;&#1076;&#1072;&#1085;&#1100; / &#1085;.&#1087;. *">
+<h3>&#68;&#105;&#115;&#99;&#111;&#114;&#100; API</h3>
+<div class="discordModeLabel">&#1041;&#1086;&#1081;&#1086;&#1074;&#1080;&#1081; &#1087;&#1086;&#1083;&#1110;&#1090;</div>
+<div class="discordInputRow">
+<input id="discordCombatWebhookInput" type="text" placeholder="&#66;&#111;&#121;&#111;&#118;&#105;&#121; Discord webhook URL">
+<button type="button" id="discordCombatLockBtn" class="iconButton" aria-label="&#1055;&#1077;&#1088;&#1077;&#1084;&#1082;&#1085;&#1091;&#1090;&#1080; &#1079;&#1072;&#1084;&#1086;&#1082;">&#128275;</button>
+</div>
+<div class="discordModeLabel">&#1058;&#1088;&#1077;&#1085;&#1091;&#1074;&#1072;&#1083;&#1100;&#1085;&#1080;&#1081; &#1087;&#1086;&#1083;&#1110;&#1090;</div>
+<div class="discordInputRow">
+<input id="discordTrainingWebhookInput" type="text" placeholder="&#84;&#114;&#101;&#110;&#117;&#118;&#97;&#108;&#110;&#105;&#121; Discord webhook URL">
+<button type="button" id="discordTrainingLockBtn" class="iconButton" aria-label="&#1055;&#1077;&#1088;&#1077;&#1084;&#1082;&#1085;&#1091;&#1090;&#1080; &#1079;&#1072;&#1084;&#1086;&#1082;">&#128275;</button>
+</div>
+<div class="quickRow actionRow">
+<button type="button" id="crewMenuCloseBtn">&#1047;&#1072;&#1082;&#1088;&#1080;&#1090;&#1080;</button>
+</div>
+</div>
+</div>
+
+<div id="versionInfoMenu" class="sendMenu">
+<div class="sendBox compactBox versionInfoBox">
+<h3>&#1065;&#1086; &#1085;&#1086;&#1074;&#1086;&#1075;&#1086; &#1074; 1.1.0</h3>
+<div class="versionInfoList">
+<p>&#1054;&#1085;&#1086;&#1074;&#1083;&#1077;&#1085;&#1086; &#1083;&#1086;&#1075;&#1110;&#1082;&#1091; &#1074;&#1110;&#1076;&#1087;&#1088;&#1072;&#1074;&#1082;&#1080; &#1076;&#1086;&#1087;&#1086;&#1074;&#1110;&#1076;&#1110;: &#1086;&#1082;&#1088;&#1077;&#1084;&#1110; &#1082;&#1085;&#1086;&#1087;&#1082;&#1080; &#1076;&#1083;&#1103; &#1082;&#1086;&#1087;&#1110;&#1102;&#1074;&#1072;&#1085;&#1085;&#1103;, WhatsApp &#1110; Discord.</p>
+<p>&#1044;&#1086;&#1076;&#1072;&#1085;&#1086; &#1086;&#1082;&#1088;&#1077;&#1084;&#1110; Discord webhook &#1076;&#1083;&#1103; &#1073;&#1086;&#1081;&#1086;&#1074;&#1086;&#1075;&#1086; &#1110; &#1090;&#1088;&#1077;&#1085;&#1091;&#1074;&#1072;&#1083;&#1100;&#1085;&#1086;&#1075;&#1086; &#1088;&#1077;&#1078;&#1080;&#1084;&#1110;&#1074;.</p>
+<p>&#1055;&#1077;&#1088;&#1077;&#1088;&#1086;&#1073;&#1083;&#1077;&#1085;&#1086; &#1087;&#1086;&#1083;&#1103; &#1087;&#1086;&#1083;&#1100;&#1086;&#1090;&#1091; &#1110; &#1082;&#1086;&#1086;&#1088;&#1076;&#1080;&#1085;&#1072;&#1090; &#1079;&#1085;&#1080;&#1097;&#1077;&#1085;&#1085;&#1103; &#1079;&#1110; &#1096;&#1074;&#1080;&#1076;&#1082;&#1080;&#1084;&#1080; &#1079;&#1085;&#1072;&#1095;&#1077;&#1085;&#1085;&#1103;&#1084;&#1080;.</p>
+<p>&#1044;&#1072;&#1085;&#1110; &#1087;&#1088;&#1086; &#1077;&#1082;&#1110;&#1087;&#1072;&#1078; &#1074;&#1080;&#1085;&#1077;&#1089;&#1077;&#1085;&#1086; &#1074; &#1086;&#1082;&#1088;&#1077;&#1084;&#1077; &#1084;&#1077;&#1085;&#1102; &#1074; &#1093;&#1077;&#1076;&#1077;&#1088;&#1110;, &#1079; &#1096;&#1074;&#1080;&#1076;&#1082;&#1080;&#1084; &#1076;&#1086;&#1089;&#1090;&#1091;&#1087;&#1086;&#1084; &#1076;&#1086; &#1087;&#1110;&#1076;&#1088;&#1086;&#1079;&#1076;&#1110;&#1083;&#1091;, &#1085;&#1072;&#1079;&#1074;&#1080; &#1077;&#1082;&#1110;&#1087;&#1072;&#1078;&#1091;, &#1085;.&#1087;. &#1110; Discord API.</p>
+<p>&#1044;&#1086;&#1076;&#1072;&#1085;&#1086; &#1086;&#1082;&#1088;&#1077;&#1084;&#1080;&#1081; &#1089;&#1090;&#1072;&#1085; &#1073;&#1086;&#1088;&#1090;&#1072; &#1076;&#1083;&#1103; &#1090;&#1088;&#1077;&#1085;&#1091;&#1074;&#1072;&#1083;&#1100;&#1085;&#1086;&#1075;&#1086; &#1087;&#1086;&#1083;&#1100;&#1086;&#1090;&#1091; &#1087;&#1088;&#1080; &#1088;&#1077;&#1079;&#1091;&#1083;&#1100;&#1090;&#1072;&#1090;&#1110; &#171;&#1041;&#1086;&#1088;&#1090; &#1087;&#1086;&#1074;&#1077;&#1088;&#1085;&#1091;&#1090;&#1086;&#187;.</p>
+</div>
+<button type="button" id="versionInfoCloseBtn">&#1047;&#1072;&#1082;&#1088;&#1080;&#1090;&#1080;</button>
+</div>
+</div>
+
+<div id="quickValueMenu" class="sendMenu">
 <div class="sendBox compactBox">
-<h3>Надіслати доповідь</h3>
-<button type="button" id="sendWhatsBtn">WhatsApp</button>
-<button type="button" id="sendDiscBtn">Discord</button>
-<button type="button" id="sendCancelBtn">Скасувати</button>
+<h3 id="quickValueTitle">&#1064;&#1074;&#1080;&#1076;&#1082;&#1110; &#1079;&#1085;&#1072;&#1095;&#1077;&#1085;&#1085;&#1103;</h3>
+<div id="quickValueOptions" class="choiceGrid"></div>
+<button type="button" id="quickValueCancelBtn">&#1057;&#1082;&#1072;&#1089;&#1091;&#1074;&#1072;&#1090;&#1080;</button>
 </div>
 </div>
 
 <div id="uavMenu" class="sendMenu">
 <div class="sendBox wideBox">
-<h3>Вибір БПЛА</h3>
+<h3>&#1042;&#1080;&#1073;&#1110;&#1088; &#1041;&#1055;&#1051;&#1040;</h3>
 <div id="uavTypeOptions" class="choiceGrid"></div>
-<h3>Режим роботи</h3>
+<h3>&#1056;&#1077;&#1078;&#1080;&#1084; &#1088;&#1086;&#1073;&#1086;&#1090;&#1080;</h3>
 <div id="uavModeOptions" class="doubleRow"></div>
 <div id="detonatorBlock" class="hidden">
-<h3>Детонатор</h3>
+<h3>&#1044;&#1077;&#1090;&#1086;&#1085;&#1072;&#1090;&#1086;&#1088;</h3>
 <div id="detonatorOptions" class="choiceGrid"></div>
 </div>
 <div id="uavModalSummary" class="modalSummary"></div>
 <div class="quickRow actionRow">
-<button type="button" id="uavConfirmBtn">Підтвердити</button>
-<button type="button" id="uavClearBtn">Очистити вибір</button>
-<button type="button" id="uavCancelBtn">Скасувати</button>
+<button type="button" id="uavConfirmBtn">&#1055;&#1110;&#1076;&#1090;&#1074;&#1077;&#1088;&#1076;&#1080;&#1090;&#1080;</button>
+<button type="button" id="uavClearBtn">&#1054;&#1095;&#1080;&#1089;&#1090;&#1080;&#1090;&#1080; &#1074;&#1080;&#1073;&#1110;&#1088;</button>
+<button type="button" id="uavCancelBtn">&#1057;&#1082;&#1072;&#1089;&#1091;&#1074;&#1072;&#1090;&#1080;</button>
 </div>
 </div>
 </div>
+
+<footer class="supportFooter">
+<div class="supportFooterInner">
+<span class="supportText">Support</span>
+<a class="supportLink" href="https://discord.gg/mDYEXC3pvP" target="_blank" rel="noopener noreferrer"><svg class="supportIcon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.317 4.369A19.79 19.79 0 0 0 15.419 3c-.211.375-.458.88-.628 1.275a18.27 18.27 0 0 0-5.583 0A12.8 12.8 0 0 0 8.58 3a19.736 19.736 0 0 0-4.9 1.369C.533 9.037-.32 13.58.107 18.057A19.93 19.93 0 0 0 6.13 21c.488-.664.923-1.364 1.296-2.102a12.94 12.94 0 0 1-2.04-.992c.17-.125.336-.255.496-.39c3.934 1.8 8.204 1.8 12.092 0c.164.135.33.265.496.39c-.65.38-1.332.716-2.04.992c.373.738.808 1.438 1.296 2.102a19.9 19.9 0 0 0 6.023-2.943c.5-5.189-.854-9.69-3.403-13.688ZM8.02 15.331c-1.183 0-2.155-1.085-2.155-2.419c0-1.334.953-2.419 2.155-2.419c1.212 0 2.174 1.095 2.155 2.419c0 1.334-.953 2.419-2.155 2.419Zm7.96 0c-1.183 0-2.155-1.085-2.155-2.419c0-1.334.953-2.419 2.155-2.419c1.212 0 2.174 1.095 2.155 2.419c0 1.334-.943 2.419-2.155 2.419Z"/></svg><span>Discord</span></a>
+</div>
+</footer>
 
 <script src="app.js" defer></script>
 </body>
