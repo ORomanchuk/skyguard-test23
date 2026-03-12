@@ -52,6 +52,8 @@ const DISCORD_COMBAT_WEBHOOK_STORAGE_KEY = "skyguard-discord-webhook-combat"
 const DISCORD_TRAINING_WEBHOOK_STORAGE_KEY = "skyguard-discord-webhook-training"
 const DISCORD_COMBAT_LOCK_STORAGE_KEY = "skyguard-discord-lock-combat"
 const DISCORD_TRAINING_LOCK_STORAGE_KEY = "skyguard-discord-lock-training"
+const REPORTS_STORAGE_URL = "http://178.104.57.177/reports"
+const REPORTS_STORAGE_API_KEY = "change-me"
 
 const el = {
   unit: document.getElementById("unit"),
@@ -302,6 +304,30 @@ function currentTime() {
   })
 }
 
+function formatTimeInput(input) {
+  const digits = input.value.replace(/[^0-9]/g, "").slice(0, 4)
+  if (digits.length <= 2) {
+    input.value = digits
+    return
+  }
+  input.value = `${digits.slice(0, 2)}:${digits.slice(2)}`
+}
+
+function isValidTimeValue(value) {
+  return /^([01]\d|2[0-3]):([0-5]\d)$/.test(value.trim())
+}
+
+function validateTimeInput(input, label) {
+  const value = input.value.trim()
+  if (!value) return true
+  if (isValidTimeValue(value)) return true
+  alert(`${label} має бути у форматі ГГ:ХХ`)
+  input.value = ""
+  updatePreview()
+  input.focus()
+  return false
+}
+
 function showWhen(element, visible) {
   element.classList.toggle("hidden", !visible)
 }
@@ -508,6 +534,66 @@ async function sendReportToDiscord() {
     alert("Доповідь успішно надіслано в Discord.")
   } catch {
     alert("Не вдалося надіслати доповідь у Discord. Перевірте webhook URL.")
+  }
+}
+
+function buildStoragePayload(message) {
+  return {
+    source: "skyguard",
+    crew: el.crew.value.trim() || null,
+    message,
+    channel: trainingMode ? "training" : "combat",
+    timestamp: new Date().toISOString(),
+    metadata: {
+      trainingMode,
+      unit: el.unit.value.trim(),
+      town: el.town.value.trim(),
+      serial: el.serial.value.trim(),
+      target: el.target.value.trim(),
+      targetType: el.targetType.value.trim(),
+      battleResult,
+      flightResult,
+      trainingReturnStatus,
+      reasons: [...selectedReasons],
+      uav: {
+        name: uavConfig.name,
+        mode: uavConfig.mode,
+        detonator: uavConfig.detonator,
+        autoWarhead: uavConfig.autoWarhead,
+        c4: uavConfig.c4
+      },
+      metrics: {
+        azimuth: el.azimuth.value.trim(),
+        course: el.course.value.trim(),
+        distance: el.distance.value.trim(),
+        height: el.height.value.trim()
+      },
+      destroyMetrics: {
+        azimuth: el.az2.value.trim(),
+        distance: el.dist2.value.trim(),
+        height: el.h2.value.trim()
+      }
+    }
+  }
+}
+
+async function sendReportToStorage(message) {
+  try {
+    const response = await fetch(REPORTS_STORAGE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": REPORTS_STORAGE_API_KEY
+      },
+      body: JSON.stringify(buildStoragePayload(message))
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`)
+    }
+  } catch (error) {
+    console.error("Помилка відправки доповіді в сховище:", error)
+    alert("Не вдалося зберегти доповідь у зовнішньому сховищі.")
   }
 }
 
@@ -950,6 +1036,7 @@ function updatePreview() {
 
 function takeoff() {
   if (!validateTakeoff()) return
+  if (!validateTimeInput(el.takeoff, "Час зльоту")) return
   if (!el.takeoff.value) el.takeoff.value = currentTime()
   hasTakenOff = true
   showWhen(el.afterTakeoff, true)
@@ -973,12 +1060,14 @@ function validateFinish() {
   return true
 }
 
-function finish() {
+async function finish() {
   if (!validateFinish()) return
+  if (!validateTimeInput(el.endTime, finishLabel())) return
   if (!el.endTime.value.trim()) el.endTime.value = currentTime()
   const reportText = trainingMode ? buildTrainingFinishReport() : buildCombatFinishReport()
   saveFlightLog()
   el.report.textContent = reportText
+  await sendReportToStorage(reportText)
 }
 
 function saveFlightLog() {
@@ -1070,12 +1159,17 @@ function initializeApp() {
   ;[el.azimuth, el.course, el.distance, el.height, el.az2, el.dist2, el.h2].forEach(input => {
     input.addEventListener("input", () => sanitizeNumericInput(input))
   })
+  ;[el.takeoff, el.endTime].forEach(input => {
+    input.addEventListener("input", () => formatTimeInput(input))
+  })
   el.azimuth.addEventListener("change", () => validateAngularInput(el.azimuth, "Азимут"))
   el.azimuth.addEventListener("blur", () => validateAngularInput(el.azimuth, "Азимут"))
   el.course.addEventListener("change", () => validateAngularInput(el.course, "Курс"))
   el.course.addEventListener("blur", () => validateAngularInput(el.course, "Курс"))
   el.az2.addEventListener("change", () => validateAngularInput(el.az2, "Азимут"))
   el.az2.addEventListener("blur", () => validateAngularInput(el.az2, "Азимут"))
+  el.takeoff.addEventListener("blur", () => validateTimeInput(el.takeoff, "Час зльоту"))
+  el.endTime.addEventListener("blur", () => validateTimeInput(el.endTime, finishLabel()))
 
   el.uavSelectBtn.onclick = openUavModal
   el.uavCancelBtn.onclick = closeUavModal
@@ -1139,3 +1233,6 @@ window.copyFlightLog = copyFlightLog
 window.clearFlightLog = clearFlightLog
 
 initializeApp()
+
+
+
