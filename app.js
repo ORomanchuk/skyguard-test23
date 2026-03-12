@@ -36,7 +36,7 @@ const QUICK_VALUE_PRESETS = {
   h2: [100, 300, 500, 700, 1000, 1200, 1500, 2000]
 }
 
-const APP_VERSION = "1.1.0"
+const APP_VERSION = "1.2.0"
 const VERSION_STORAGE_KEY = "skyguard-app-version"
 const SKIP_SPLASH_KEY = "skyguard-skip-splash"
 const RELOAD_TRAINING_MODE_KEY = "skyguard-reload-training-mode"
