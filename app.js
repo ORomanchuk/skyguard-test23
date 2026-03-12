@@ -52,7 +52,7 @@ const DISCORD_COMBAT_WEBHOOK_STORAGE_KEY = "skyguard-discord-webhook-combat"
 const DISCORD_TRAINING_WEBHOOK_STORAGE_KEY = "skyguard-discord-webhook-training"
 const DISCORD_COMBAT_LOCK_STORAGE_KEY = "skyguard-discord-lock-combat"
 const DISCORD_TRAINING_LOCK_STORAGE_KEY = "skyguard-discord-lock-training"
-const REPORTS_STORAGE_URL = "http://178.104.57.177/reports"
+const REPORTS_STORAGE_URL = "https://report.skyguard.space/reports"
 const REPORTS_STORAGE_API_KEY = "change-me"
 
 const el = {
